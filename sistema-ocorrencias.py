@@ -41,5 +41,55 @@ def cadastrar_ocorrencia():
     print("Ocorrência cadastrada com sucesso!\n")
 
 
+def listar_ocorrencias ():
+    conexao = sqlite3.connect("ocorrencias.db")
+    cursor = conexao.cursor()
+
+    cursor.execute("SELECT * FROM ocorrencias")
+    resultados = cursor.fetchall()
+
+    conexao.close()
+
+    if not resultados:
+        print("Nenhuma ocorrência cadastrada ainda.\n")
+        return
+
+    for linha in resultados:
+        print(f"ID: {linha[0]}")
+        print(f"Tipo: {linha[1]}")
+        print(f"Descrição: {linha[2]}")
+        print(f"Data: {linha[3]}")
+        print(f"Local: {linha[4]}")
+        print(f"Status: {linha[5]}")
+        print(f"Prioridade: {linha[6]}")
+        print("-" * 30)
+
+
+def atualizar_ocorrencia(): 
+    listar_ocorrencias()
+    id_ocorrencia = input("Digite o ID da ocorrência que deseja atualizar: ")
+
+    novo_status = input("Novo status (aberta/em andamento/encerrada): ")
+    nova_prioridade = input("Nova prioridade (baixa/media/alta/urgente): ")
+
+    conexao = sqlite3.connect("ocorrencias.db")
+    cursor = conexao.cursor()
+
+    cursor.execute("""
+        UPDATE ocorrencias
+        SET status = ?, prioridade = ?
+        WHERE id = ?
+    """,    (novo_status, nova_prioridade, id_ocorrencia))
+
+    conexao.commit()
+
+    if cursor.rowcount == 0:
+        print("Nenhuma ocorrência encontrada com esse ID.\n")
+    else:
+        print("Ocorrência atualizada com sucesso!\n")
+
+    conexao.close()
+
 criar_banco()
-cadastrar_ocorrencia()
+atualizar_ocorrencia()
+ 
